@@ -1,15 +1,23 @@
 import { useState } from "react";
 import BookCard from "./components/BookCard";
 import { toast } from "react-toastify";
+import EditModal from "./components/EditModal";
 
 function App() {
   const [bookName, setBookName] = useState("");
   const [books, setBooks] = useState([]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editItem, setEditItem] = useState(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!bookName) {
+      toast.warning("Please enter book name", { autoClose: 800 });
+      return;
+    }
 
     const newBook = {
       id: new Date().getTime(),
@@ -56,6 +64,25 @@ function App() {
 
     setBooks(cloneBooks);
   };
+
+  // kitabı günceller
+  const handleEditBook = () => {
+    // değişecek elemanın dizide ki sırasını bul
+    const index = books.findIndex((book) => book.id === editItem.id);
+
+    //kitaplar dizisinin kopyasını oluşturma
+    const cloneBooks = [...books];
+
+    // eski kitabı diziden çıkar yerine yenisini koy
+    cloneBooks.splice(index, 1, editItem);
+
+    // stati güncelle
+
+    setBooks(cloneBooks);
+
+    // modalı kapat
+    setShowEditModal(false);
+  };
   return (
     <div>
       {/* header */}
@@ -85,6 +112,8 @@ function App() {
               book={book}
               handleModal={handleModal}
               handleRead={handleRead}
+              setShowEditModal={setShowEditModal}
+              setEditItem={setEditItem}
             />
           ))}
         </div>
@@ -93,24 +122,37 @@ function App() {
       {/* modal */}
 
       {showConfirm && (
-        <div>
-          <h5>Do you want to delete?</h5>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="btn btn-warning"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={() => {
-              handleDelete(deleteId);
-              setShowConfirm(!showConfirm);
-            }}
-            className="btn btn-danger"
-          >
-            Confirm
-          </button>
+        <div className="confirmModal">
+          <div className="confirmModalInner shadow">
+            <h5>Do you want to delete?</h5>
+            <button
+              className="btn btn-warning"
+              onClick={() => setShowConfirm(false)}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={() => {
+                handleDelete(deleteId);
+                setShowConfirm(!showConfirm);
+              }}
+            >
+              Confirm
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* edit modal */}
+
+      {showEditModal && (
+        <EditModal
+          setShowEditModal={setShowEditModal}
+          setEditItem={setEditItem}
+          editItem={editItem}
+          handleEditBook={handleEditBook}
+        />
       )}
     </div>
   );

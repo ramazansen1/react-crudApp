@@ -1,6 +1,12 @@
 import React from "react";
 
-const BookCard = ({ book, handleRead, handleModal }) => {
+const BookCard = ({
+  book,
+  handleRead,
+  handleModal,
+  setShowEditModal,
+  setEditItem,
+}) => {
   return (
     <div className="d-flex align-items-center justify-content-between border p-3 my-4 shadow">
       <div>
@@ -18,7 +24,17 @@ const BookCard = ({ book, handleRead, handleModal }) => {
         <button onClick={() => handleModal(book.id)} className="btn btn-danger">
           Sil
         </button>
-        <button className="btn btn-primary">Düzenle</button>
+        <button
+          onClick={() => {
+            // güncellecek kitapı app js gönder
+            setEditItem(book);
+            // modal aç
+            setShowEditModal(true);
+          }}
+          className="btn btn-primary"
+        >
+          Düzenle
+        </button>
         <button onClick={() => handleRead(book)} className="btn btn-success">
           {book.isRead ? "Okundu" : "Okunmadı"}
         </button>
